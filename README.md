@@ -12,15 +12,7 @@ Spring Boot basic authentication with custom configuration; using in-memory stor
 
 ## Enable Web Security
 
-```java
-@SpringBootApplication
-@EnableWebSecurity
-public class Application {
-  public static void main(String... args) {
-    SpringApplication.run(Application.class, args);
-  }
-}
-```
+Web security is enabled in custom configuration.
 
 ## Create Custom Configuration
 
