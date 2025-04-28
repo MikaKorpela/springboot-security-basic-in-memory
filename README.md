@@ -2,7 +2,9 @@
 
 The `spring-boot-starter-security` dependency enables the authentication and authorization in all end-points.
 
-The configurations override the default user creation; see `springboot-security-basic-properties`; and the default `SecurityFilterChain`.
+The configurations override the default user creation; see `springboot-security-basic-default`; and the default `SecurityFilterChain`.
+
+The user credentials are defined in configuration; instead of properties; and stored into memory.
 
 ```java
 @Configuration
