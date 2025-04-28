@@ -1,30 +1,65 @@
-# README #
+# springboot-security-basic-in-memory #
 
-This README would normally document whatever steps are necessary to get your application up and
-running.
+The `spring-boot-starter-security` dependency enables the authentication and authorization in all end-points.
 
-### What is this repository for? ###
+The configurations override the default user creation; see `springboot-security-basic-properties`; and the default `SecurityFilterChain`.
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+```java
+@Configuration
+public class WebSecurityConfiguration {
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    httpSecurity.authorizeHttpRequests(requests -> requests
+        .requestMatchers("/api/duey").hasRole("USER")
+        .requestMatchers("/api/huey").authenticated()
+        .requestMatchers("/api/luey").permitAll());
 
-### How do I get set up? ###
+    httpSecurity.formLogin(Customizer.withDefaults());
+    httpSecurity.httpBasic(Customizer.withDefaults());
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+    return httpSecurity.build();
+  }
 
-### Contribution guidelines ###
+  @Bean
+  public UserDetailsService userDetailsService() {
+    UserDetails donald = User.withUsername("donald")
+        .password("{bcrypt}$2a$12$gnGgQDZOcqZ/nCCPSSGXOOcgHSkI3pvyAGYfpFqWx5c74RrumWV7e")
+        .authorities("ROLE_USER")
+        .build();
 
-* Writing tests
-* Code review
-* Other guidelines
+    UserDetails fethry = User.withUsername("fethry")
+        .password("{bcrypt}$2a$12$gnGgQDZOcqZ/nCCPSSGXOOcgHSkI3pvyAGYfpFqWx5c74RrumWV7e")
+        .build();
 
-### Who do I talk to? ###
+    return new InMemoryUserDetailsManager(donald, fethry);
+  }
 
-* Repo owner or admin
-* Other community or team contact
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+  }
+}
+```
+
+## Security Filter Chain ##
+
+The `SecurityFilterChain` is a bean that configures security settings for each end-point:
+- `/api/duey` is accessible only for users with `ROLE_USER` role
+- `/api/huey` is accessible for authenticated users
+- `/api/luey` is accessible for all users
+
+The `httpSecurity.formLogin()` and `httpSecurity.httpBasic()` methods enable form-based and basic authentication.
+
+## User Details Service ##
+
+The `UserDetailsService` is a bean that creates two users:
+- `donald` with `ROLE_USER` role
+- `fethry` without any role
+
+## Password Encoder ##
+
+The `PasswordEncoder` is a bean that creates a password encoder that uses the bcrypt algorithm.
+
+The bcrypt is basically the default password encoder in Spring Security.
+
+The password can be encoded in https://bcrypt-generator.com/ for testing purposes.
